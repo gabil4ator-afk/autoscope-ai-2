@@ -1,0 +1,9 @@
+aiogram
+aiohttp
+openai
+playwright
+playwright-stealth
+python-dotenv
+fake-useragent
+beautifulsoup4
+lxml
