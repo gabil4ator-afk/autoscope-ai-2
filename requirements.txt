@@ -7,3 +7,4 @@ python-dotenv
 fake-useragent
 beautifulsoup4
 lxml
+bs4
