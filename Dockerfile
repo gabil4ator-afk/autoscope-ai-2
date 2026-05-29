@@ -11,7 +11,7 @@ RUN chown -R $(id -u):$(id -g) /app/data 2>/dev/null || chown -R 1000:1000 /app/
 
 # Устанавливаем обнаруженные зависимости
 RUN pip install --no-cache-dir 
-aiogram>=3.0.0 
+aiogram 
 requests 
 aiohttp 
 beautifulsoup4 
