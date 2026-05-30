@@ -1,0 +1,6 @@
+aiogram>=3.0.0
+requests
+openai>=1.30.0
+beautifulsoup4
+playwright
+playwright-stealth
