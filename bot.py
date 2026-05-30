@@ -469,38 +469,28 @@ async def parse_listing(url):
         async with async_playwright() as p:
 
             browser = await p.chromium.launch(
-    headless=True,
-    args=[
-        "--no-sandbox",
-        "--disable-setuid-sandbox",
-        "--disable-dev-shm-usage",
-        "--disable-gpu",
-        "--disable-blink-features=AutomationControlled"
-    ]
-)
-
-           page = await browser.new_page(
-    viewport={
-        "width": 1280,
-        "height": 720
-    }
-)
-            #await stealth(page)
-
-            await page.set_extra_http_headers({
-                "Accept-Language": "ru-RU,ru;q=0.9"
-            })
-
-            await page.goto(
-                url,
-                timeout=30000,
-                wait_until="domcontentloaded"
+                headless=True,
+                args=[
+                    "--no-sandbox",
+                    "--disable-setuid-sandbox",
+                    "--disable-dev-shm-usage",
+                    "--disable-gpu",
+                    "--disable-blink-features=AutomationControlled"
+                ]
             )
-        await page.set_user_agent(
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-    "AppleWebKit/537.36 (KHTML, like Gecko) "
-    "Chrome/131.0.0.0 Safari/537.36"
-)
+
+            page = await browser.new_page(
+                viewport={
+                    "width": 1280,
+                    "height": 720
+                }
+            )
+
+            await page.set_user_agent(
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                "AppleWebKit/537.36 (KHTML, like Gecko) "
+                "Chrome/131.0.0.0 Safari/537.36"
+            )
 
             await page.wait_for_timeout(3000)
 
