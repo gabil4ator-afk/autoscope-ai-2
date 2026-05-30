@@ -475,7 +475,11 @@ async def parse_listing(url):
                     "--disable-setuid-sandbox",
                     "--disable-dev-shm-usage",
                     "--disable-gpu",
-                    "--disable-blink-features=AutomationControlled"
+                    "--disable-blink-features=AutomationControlled",
+                    "--disable-extensions",
+                    "--disable-background-networking",
+                    "--disable-sync",
+                    "--disable-default-apps"
                 ]
             )
 
@@ -494,13 +498,15 @@ async def parse_listing(url):
 
             page = await context.new_page()
 
+            print("OPENING:", url)
+
             await page.goto(
                 url,
-                wait_until="load",
-                timeout=60000
+                wait_until="domcontentloaded",
+                timeout=15000
             )
 
-            await page.wait_for_timeout(5000)
+            await page.wait_for_timeout(3000)
 
             print("STATUS:", await page.evaluate("document.readyState"))
             print("URL:", page.url)
