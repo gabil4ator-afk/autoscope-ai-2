@@ -479,30 +479,30 @@ async def parse_listing(url):
                 ]
             )
 
-            page = await browser.new_page(
+            context = await browser.new_context(
+                user_agent=(
+                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                    "AppleWebKit/537.36 (KHTML, like Gecko) "
+                    "Chrome/131.0.0.0 Safari/537.36"
+                ),
                 viewport={
                     "width": 1280,
                     "height": 720
-                }
+                },
+                locale="ru-RU"
             )
 
-            await page.set_extra_http_headers({
-                "Accept-Language": "ru-RU,ru;q=0.9"
-            })
+            page = await context.new_page()
 
-            response = await page.goto(
+            await page.goto(
                 url,
-                timeout=15000,
-                wait_until="commit"
-            )
-
-            print(
-                "STATUS:",
-                response.status if response else "NO RESPONSE"
+                wait_until="load",
+                timeout=60000
             )
 
             await page.wait_for_timeout(5000)
 
+            print("STATUS:", await page.evaluate("document.readyState"))
             print("URL:", page.url)
             print("TITLE:", await page.title())
 
@@ -510,63 +510,65 @@ async def parse_listing(url):
 
             print("HTML LENGTH:", len(html))
 
-            html_lower = html.lower()
-
-            blocked_words = [
-                "captcha",
-                "cloudflare",
-                "verify you are human",
-                "access denied",
-                "403 forbidden",
-                "подозрительная активность",
-                "автоматические запросы"
-            ]
-
-            for word in blocked_words:
-
-                if word in html_lower:
-
-                    print("BLOCKED:", word)
-
-                    await browser.close()
-
-                    return None
-
             await browser.close()
 
-            soup = BeautifulSoup(
-                html,
-                "html.parser"
-            )
+        html_lower = html.lower()
 
-            title = soup.title.text if soup.title else ""
+        blocked_words = [
+            "captcha",
+            "cloudflare",
+            "verify you are human",
+            "access denied",
+            "подозрительная активность",
+            "автоматические запросы"
+        ]
 
-            text = soup.get_text(
-                " ",
-                strip=True
-            )
+        for word in blocked_words:
 
-            text = " ".join(text.split())
+            if word in html_lower:
 
-            result = f"""
-TITLE:
-{title}
+                print("BLOCKED:", word)
 
-TEXT:
-{text[:6000]}
+                return None
 
-HTML:
-{html[:6000]}
-"""
+        soup = BeautifulSoup(
+            html,
+            "html.parser"
+        )
 
-            return result
+        for tag in soup([
+            "script",
+            "style",
+            "noscript",
+            "svg"
+        ]):
+            tag.decompose()
+
+        text = soup.get_text(
+            " ",
+            strip=True
+        )
+
+        text = " ".join(text.split())
+
+        print("TEXT LENGTH:", len(text))
+
+        if len(text) < 300:
+
+            title = ""
+
+            if soup.title:
+                title = soup.title.text.strip()
+
+            print("USING TITLE")
+
+            return title
+
+        return text[:15000]
 
     except Exception as e:
 
-        print(
-            "PARSER ERROR:",
-            str(e)
-        )
+        print("PARSER ERROR:", e)
 
         return None
 # ======================================================
