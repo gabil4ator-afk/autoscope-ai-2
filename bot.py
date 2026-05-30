@@ -510,55 +510,56 @@ async def parse_listing(url):
 
             print("HTML LENGTH:", len(html))
 
+            html_lower = html.lower()
+
+            blocked_words = [
+                "captcha",
+                "cloudflare",
+                "verify you are human",
+                "access denied",
+                "403 forbidden",
+                "подозрительная активность",
+                "автоматические запросы"
+            ]
+
+            for word in blocked_words:
+
+                if word in html_lower:
+
+                    print("BLOCKED:", word)
+
+                    await browser.close()
+
+                    return None
+
             await browser.close()
 
-        html_lower = html.lower()
-
-        blocked_words = [
-            "captcha",
-            "cloudflare",
-            "verify you are human",
-            "access denied",
-            "подозрительная активность",
-            "автоматические запросы",
-            "403 forbidden",
-            "blocked"
-        ]
-
-        for word in blocked_words:
-            if word in html_lower:
-                print("BLOCKED:", word)
-                return None
-
-        soup = BeautifulSoup(
-            html,
-            "html.parser"
-        )
-
-        for tag in soup([
-            "script",
-            "style",
-            "noscript"
-        ]):
-            tag.decompose()
-
-        text = soup.get_text(
-            " ",
-            strip=True
-        )
-
-        text = " ".join(text.split())
-
-        if len(text) < 500:
-
-            print(
-                "TEXT TOO SHORT:",
-                len(text)
+            soup = BeautifulSoup(
+                html,
+                "html.parser"
             )
 
-            return None
+            title = soup.title.text if soup.title else ""
 
-        return text[:8000]
+            text = soup.get_text(
+                " ",
+                strip=True
+            )
+
+            text = " ".join(text.split())
+
+            result = f"""
+TITLE:
+{title}
+
+TEXT:
+{text[:6000]}
+
+HTML:
+{html[:6000]}
+"""
+
+            return result
 
     except Exception as e:
 
