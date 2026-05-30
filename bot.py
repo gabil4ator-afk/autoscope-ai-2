@@ -1,3 +1,9 @@
+import subprocess
+
+subprocess.run(
+    ["python", "-m", "playwright", "install", "chromium"],
+    check=False
+)
 import os
 
 ADMIN_ID = int(os.getenv("ADMIN_ID"))
