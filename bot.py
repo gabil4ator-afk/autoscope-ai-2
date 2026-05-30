@@ -492,11 +492,22 @@ async def parse_listing(url):
                 "Chrome/131.0.0.0 Safari/537.36"
             )
 
+            await page.set_extra_http_headers({
+                "Accept-Language": "ru-RU,ru;q=0.9"
+            })
+
+            await page.goto(
+                url,
+                timeout=30000,
+                wait_until="domcontentloaded"
+            )
+
             await page.wait_for_timeout(3000)
 
-           print("URL:", page.url)
-print("TITLE:", await page.title())
-        html = await page.content()
+            print("URL:", page.url)
+            print("TITLE:", await page.title())
+
+            html = await page.content()
 
             await browser.close()
 
@@ -545,7 +556,6 @@ print("TITLE:", await page.title())
         print("PARSER ERROR:", e)
 
         return None
-
 # ======================================================
 # MAIN
 # ======================================================
