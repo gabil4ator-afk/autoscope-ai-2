@@ -6,9 +6,9 @@ import os
 from openai import OpenAI
 from apify_client import ApifyClient
 
-BOT_TOKEN = os.getenv("BOT_TOKEN")
-OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
-APIFY_TOKEN = os.getenv("APIFY_TOKEN")
+BOT_TOKEN = os.getenv("8362446873:AAE6LUtuf1Kiec4dNfy467nMKXgf8KD1Cf4")
+OPENROUTER_API_KEY = os.getenv("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")
+APIFY_TOKEN = os.getenv("apify_api_QPaMkjHdfh6cn7sO7YjRDgOXVtAaWC2G2raJ")
 import asyncio
 import sqlite3
 import requests
