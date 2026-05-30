@@ -477,7 +477,7 @@ async def parse_listing(url):
 
             page = await browser.new_page()
 
-            await stealth(page)
+            #await stealth(page)
 
             await page.set_extra_http_headers({
                 "Accept-Language": "ru-RU,ru;q=0.9"
