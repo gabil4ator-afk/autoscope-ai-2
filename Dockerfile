@@ -2,40 +2,45 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-# Директория для постоянных данных: БД, файлы состояния, логи.
-# Монтируется как Docker volume — данные сохраняются при перезапуске.
-# В коде бота используйте: import os; DATA_DIR = os.getenv('DATA_DIR', '/app/data')
+# Директория для БД и файлов
+
 ENV DATA_DIR=/app/data
+
 RUN mkdir -p /app/data && chmod 777 /app/data
-RUN chown -R $(id -u):$(id -g) /app/data 2>/dev/null || chown -R 1000:1000 /app/data || true
+RUN chown -R 1000:1000 /app/data || true
 
-# Устанавливаем обнаруженные зависимости
-RUN pip install --no-cache-dir aiogram requests aiohttp beautifulsoup4 bs4 openai playwright playwright-stealth python-dotenv fake-useragent lxml pyTelegramBotAPI
-RUN python -m playwright install chromium
-RUN python -m playwright install --with-deps chromium
-RUN ls -la /root/.cache/ms-playwright/ || true
+# Устанавливаем только нужные зависимости
 
-RUN playwright install chromium
+RUN pip install --no-cache-dir 
+aiogram 
+requests 
+aiohttp 
+beautifulsoup4 
+bs4 
+openai 
+python-dotenv 
+fake-useragent 
+lxml 
+pyTelegramBotAPI
 
+# Очистка кеша pip
 
-# Очищаем pip кеш
 RUN pip cache purge || true
 
-# Копируем код приложения
+# Копируем проект
+
 COPY . .
 
-# Создаем entrypoint скрипт для инициализации прав на /app/data
-RUN echo '#!/bin/sh' > /usr/local/bin/entrypoint.sh && \
-    echo 'set -e' >> /usr/local/bin/entrypoint.sh && \
-    echo '# Инициализация прав на /app/data (важно для volume)' >> /usr/local/bin/entrypoint.sh && \
-    echo 'mkdir -p /app/data' >> /usr/local/bin/entrypoint.sh && \
-    echo 'chmod 777 /app/data' >> /usr/local/bin/entrypoint.sh && \
-    echo 'chown -R $(id -u):$(id -g) /app/data 2>/dev/null || true' >> /usr/local/bin/entrypoint.sh && \
-    echo '# Запускаем основное приложение' >> /usr/local/bin/entrypoint.sh && \
-    echo 'exec "$@"' >> /usr/local/bin/entrypoint.sh && \
-    chmod +x /usr/local/bin/entrypoint.sh
+# Entrypoint
+
+RUN echo '#!/bin/sh' > /usr/local/bin/entrypoint.sh && 
+echo 'set -e' >> /usr/local/bin/entrypoint.sh && 
+echo 'mkdir -p /app/data' >> /usr/local/bin/entrypoint.sh && 
+echo 'chmod 777 /app/data' >> /usr/local/bin/entrypoint.sh && 
+echo 'exec "$@"' >> /usr/local/bin/entrypoint.sh && 
+chmod +x /usr/local/bin/entrypoint.sh
 
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 
-# Запускаем главный файл
 CMD ["python", "bot.py"]
+
