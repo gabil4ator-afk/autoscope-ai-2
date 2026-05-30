@@ -1,3 +1,9 @@
+import os
+
+from openai import OpenAI
+
+BOT_TOKEN = os.getenv("BOT_TOKEN")
+OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
 import asyncio
 import sqlite3
 import requests
@@ -15,17 +21,12 @@ from aiogram.types import (
     KeyboardButton
 )
 
-from openai import OpenAI
+
 
 # ======================================================
 # TOKENS
 # ======================================================
 
-BOT_TOKEN = "8362446873:AAE6LUtuf1Kiec4dNfy467nMKXgf8KD1Cf4"
-
-OPENROUTER_API_KEY = "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"
-
-ADMIN_ID = 972175523
 
 # ======================================================
 # TELEGRAM
