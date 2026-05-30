@@ -483,30 +483,32 @@ async def parse_listing(url):
                 viewport={
                     "width": 1280,
                     "height": 720
-                },
-                user_agent=(
-                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-                    "AppleWebKit/537.36 (KHTML, like Gecko) "
-                    "Chrome/131.0.0.0 Safari/537.36"
-                )
+                }
             )
 
             await page.set_extra_http_headers({
                 "Accept-Language": "ru-RU,ru;q=0.9"
             })
 
-            await page.goto(
+            response = await page.goto(
                 url,
-                timeout=30000,
-                wait_until="domcontentloaded"
+                timeout=15000,
+                wait_until="commit"
             )
 
-            await page.wait_for_timeout(3000)
+            print(
+                "STATUS:",
+                response.status if response else "NO RESPONSE"
+            )
+
+            await page.wait_for_timeout(5000)
 
             print("URL:", page.url)
             print("TITLE:", await page.title())
 
             html = await page.content()
+
+            print("HTML LENGTH:", len(html))
 
             await browser.close()
 
@@ -518,11 +520,14 @@ async def parse_listing(url):
             "verify you are human",
             "access denied",
             "подозрительная активность",
-            "автоматические запросы"
+            "автоматические запросы",
+            "403 forbidden",
+            "blocked"
         ]
 
         for word in blocked_words:
             if word in html_lower:
+                print("BLOCKED:", word)
                 return None
 
         soup = BeautifulSoup(
@@ -545,13 +550,22 @@ async def parse_listing(url):
         text = " ".join(text.split())
 
         if len(text) < 500:
+
+            print(
+                "TEXT TOO SHORT:",
+                len(text)
+            )
+
             return None
 
         return text[:8000]
 
     except Exception as e:
 
-        print("PARSER ERROR:", e)
+        print(
+            "PARSER ERROR:",
+            str(e)
+        )
 
         return None
 # ======================================================
