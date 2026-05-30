@@ -19,8 +19,6 @@ import requests
 
 from bs4 import BeautifulSoup
 
-from playwright.async_api import async_playwright
-from playwright_stealth import stealth
 
 from aiogram import Bot, Dispatcher
 from aiogram.filters import CommandStart, Command
@@ -462,61 +460,39 @@ def decode_vin(vin):
 # PARSER
 # ======================================================
 
+# ======================================================
+# PARSER
+# ======================================================
+
 async def parse_listing(url):
 
     try:
 
-        async with async_playwright() as p:
+        headers = {
+            "User-Agent": (
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                "AppleWebKit/537.36 (KHTML, like Gecko) "
+                "Chrome/131.0.0.0 Safari/537.36"
+            ),
+            "Accept-Language": "ru-RU,ru;q=0.9"
+        }
 
-            browser = await p.chromium.launch(
-                headless=True,
-                args=[
-                    "--no-sandbox",
-                    "--disable-setuid-sandbox",
-                    "--disable-dev-shm-usage",
-                    "--disable-gpu",
-                    "--disable-blink-features=AutomationControlled",
-                    "--disable-extensions",
-                    "--disable-background-networking",
-                    "--disable-sync",
-                    "--disable-default-apps"
-                ]
-            )
+        response = requests.get(
+            url,
+            headers=headers,
+            timeout=20,
+            allow_redirects=True
+        )
 
-            context = await browser.new_context(
-                user_agent=(
-                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-                    "AppleWebKit/537.36 (KHTML, like Gecko) "
-                    "Chrome/131.0.0.0 Safari/537.36"
-                ),
-                viewport={
-                    "width": 1280,
-                    "height": 720
-                },
-                locale="ru-RU"
-            )
+        print("STATUS:", response.status_code)
+        print("URL:", response.url)
 
-            page = await context.new_page()
+        if response.status_code != 200:
+            return None
 
-            print("OPENING:", url)
+        html = response.text
 
-            await page.goto(
-                url,
-                wait_until="domcontentloaded",
-                timeout=15000
-            )
-
-            await page.wait_for_timeout(3000)
-
-            print("STATUS:", await page.evaluate("document.readyState"))
-            print("URL:", page.url)
-            print("TITLE:", await page.title())
-
-            html = await page.content()
-
-            print("HTML LENGTH:", len(html))
-
-            await browser.close()
+        print("HTML LENGTH:", len(html))
 
         html_lower = html.lower()
 
@@ -542,6 +518,13 @@ async def parse_listing(url):
             "html.parser"
         )
 
+        title = ""
+
+        if soup.title:
+            title = soup.title.get_text(strip=True)
+
+        print("TITLE:", title)
+
         for tag in soup([
             "script",
             "style",
@@ -559,12 +542,7 @@ async def parse_listing(url):
 
         print("TEXT LENGTH:", len(text))
 
-        if len(text) < 300:
-
-            title = ""
-
-            if soup.title:
-                title = soup.title.text.strip()
+        if len(text) < 200:
 
             print("USING TITLE")
 
