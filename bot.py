@@ -475,7 +475,9 @@ async def parse_listing(url):
                 ]
             )
 
-            page = await browser.new_page()
+            page = await browser.new_page(
+    user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/128.0.0.0 Safari/537.36"
+)
 
             #await stealth(page)
 
@@ -485,11 +487,11 @@ async def parse_listing(url):
 
             await page.goto(
                 url,
-                timeout=90000,
-                wait_until="networkidle"
+                timeout=30000,
+                wait_until="domcontentloaded"
             )
 
-            await page.wait_for_timeout(8000)
+            await page.wait_for_timeout(3000)
 
             html = await page.content()
 
