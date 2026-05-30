@@ -13,6 +13,7 @@ RUN chown -R $(id -u):$(id -g) /app/data 2>/dev/null || chown -R 1000:1000 /app/
 RUN pip install --no-cache-dir aiogram requests aiohttp beautifulsoup4 bs4 openai playwright playwright-stealth python-dotenv fake-useragent lxml pyTelegramBotAPI
 RUN python -m playwright install chromium
 RUN python -m playwright install --with-deps chromium
+RUN ls -la /root/.cache/ms-playwright/ || true
 
 RUN playwright install chromium
 
