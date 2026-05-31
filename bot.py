@@ -110,25 +110,31 @@ async def ask_ai(prompt: str):
 async def parse_listing(url: str):
     try:
         vehicle_id = extract_id(url)
+
+        print(f"[CARAPIS] URL: {url}")
+        print(f"[CARAPIS] ID: {vehicle_id}")
+
         if not vehicle_id:
+            print("[CARAPIS] Не удалось извлечь ID")
             return None
 
         vehicle = await carapis_client.vehicles.get_async(vehicle_id)
 
+        print(f"[CARAPIS] RESPONSE: {vehicle}")
+
         data = {
             "id": getattr(vehicle, "id", vehicle_id),
-            "title": getattr(vehicle, "title", None),
-            "brand": getattr(vehicle, "brand", None),
-            "model": getattr(vehicle, "model", None),
-            "year": getattr(vehicle, "year", None),
-            "mileage": getattr(vehicle, "mileage", None),
-            "market": getattr(vehicle, "market", None),
-            "seller": getattr(vehicle, "seller", None),
-            "location": getattr(vehicle, "location", None),
+            "title": getattr(vehicle, "title", ""),
+            "brand": getattr(vehicle, "brand", ""),
+            "model": getattr(vehicle, "model", ""),
+            "year": getattr(vehicle, "year", ""),
+            "mileage": getattr(vehicle, "mileage", ""),
+            "market": getattr(vehicle, "market", ""),
             "url": url
         }
 
         price = getattr(vehicle, "price", None)
+
         if price:
             data["price"] = {
                 "amount": getattr(price, "amount", None),
@@ -139,7 +145,14 @@ async def parse_listing(url: str):
         return json.dumps(data, ensure_ascii=False, indent=2)
 
     except Exception as e:
-        print(f"CARAPIS ERROR: {e!r}")
+        import traceback
+
+        print("========== CARAPIS ERROR ==========")
+        print(type(e).__name__)
+        print(str(e))
+        traceback.print_exc()
+        print("===================================")
+
         return None
 
 @dp.message(CommandStart())
