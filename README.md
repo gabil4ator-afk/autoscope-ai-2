@@ -1,1 +1,0 @@
-AutoScope AI Carapis Edition
