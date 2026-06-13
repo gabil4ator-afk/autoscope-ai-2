@@ -1,1 +1,0 @@
-AutoScope fixed build
