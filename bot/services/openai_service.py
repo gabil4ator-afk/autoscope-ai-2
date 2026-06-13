@@ -1,6 +1,18 @@
 from openai import AsyncOpenAI
 from bot.config import OPENAI_API_KEY
 import base64
+import datetime
+
+# Получаем реальный текущий год прямо сейчас (2026)
+current_year = datetime.date.today().year 
+
+# Вставляем его прямо в системный промт перед отправкой в OpenRouter
+system_prompt = f"""
+Ты — эксперт по автоподбору. 
+ВНИМАНИЕ: Сейчас СТРОГО {current_year} год. 
+Если машина 2019 года выпуска, то её возраст на данный момент составляет ровно {current_year} - 2019 = {current_year - 2019} лет!
+Считай среднегодовой пробег только на основе этой цифры.
+"""
 
 TEXT_PROMPT = '''Ты — опытный эксперт по автоподбору со стажем 10 лет...
 Риск + Надёжность = 100.
