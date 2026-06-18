@@ -1,0 +1,10 @@
+aiogram==3.22.0
+openai
+sqlalchemy
+asyncpg
+python-dotenv
+pillow
+
+httpx
+
+google-genai
