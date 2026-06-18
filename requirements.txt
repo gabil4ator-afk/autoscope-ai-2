@@ -1,0 +1,8 @@
+
+aiogram==3.22.0
+openai>=1.40.0
+sqlalchemy
+asyncpg
+python-dotenv
+pillow
+httpx

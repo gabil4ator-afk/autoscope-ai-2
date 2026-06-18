@@ -1,0 +1,15 @@
+Добавлены:
+- SQLite статистика.
+- Учёт пользователей.
+- Учёт текстовых анализов.
+- Учёт анализов изображений.
+- Команда /stats.
+
+Нужно импортировать:
+from bot.services.stats_service import init_db, register_user, inc_text, inc_image
+
+И вызывать:
+init_db() при запуске приложения
+register_user(user.id) в /start
+inc_text(user.id) при анализе текста
+inc_image(user.id) при анализе фото
