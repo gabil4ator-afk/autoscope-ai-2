@@ -1,1 +1,0 @@
-Проект переведен на Gemini 2.5 Flash. Укажи GEMINI_API_KEY в .env и установи зависимости из requirements.txt.
